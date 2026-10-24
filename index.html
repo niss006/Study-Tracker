@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bun in the Oven 🥐</title>
+    <!-- THIS LINE IS CRITICAL. IT LOADS THE CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- CUSTOM MODAL -->
+    <div class="modal-overlay" id="custom-modal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modal-icon">⚠️</div>
+            <div class="modal-title" id="modal-title">Are you sure?</div>
+            <div class="modal-text" id="modal-text">Your bun will burn if you stop now.</div>
+            <div class="modal-actions" id="modal-actions"></div>
+        </div>
+    </div>
+
+    <!-- AI STUDY MODAL -->
+    <div class="modal-overlay" id="ai-modal">
+        <div class="modal-box" style="width: 450px; text-align: left;">
+            <div class="modal-title" style="text-align: center;">🥐 Bun Baked! What did you learn?</div>
+            <div style="display:flex; gap:10px; margin: 15px 0;">
+                <input type="text" id="ai-topic-input" placeholder="e.g. Mitochondria..." class="cozy-input">
+                <button class="modal-btn modal-btn-confirm" onclick="askOllama()" style="flex:0.5;">Ask AI</button>
+            </div>
+            <div id="ai-response" class="ai-response-box" style="display:none;">
+                <div class="loader" id="ai-loader"></div>
+                <div id="ai-text"></div>
+            </div>
+            <div class="modal-actions" style="margin-top: 15px;">
+                <button class="modal-btn modal-btn-cancel" onclick="closeAiModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI CHAT BUBBLE MODAL -->
+    <div class="modal-overlay" id="ai-chat-modal">
+        <div class="modal-box" style="width: 500px; text-align: left;">
+            <div class="modal-title" style="text-align: center;">🤖 Study Buddy AI</div>
+            <div id="chat-history" class="chat-history-box">
+                <div class="chat-msg ai">Hi! I'm your study buddy. Ask me a question, ask for a summary, or just say hi.</div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top: 15px;">
+                <input type="text" id="chat-input" placeholder="Type a message..." class="cozy-input" onkeypress="handleChatEnter(event)">
+                <button class="modal-btn modal-btn-confirm" onclick="sendChatMessage()" style="flex:0.5;">Send</button>
+            </div>
+            <div class="modal-actions" style="margin-top: 15px;">
+                <button class="modal-btn modal-btn-cancel" onclick="closeChatModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-container">
+        
+        <!-- KITCHEN PAGE -->
+        <div class="page" id="room-page">
+            <div class="room">
+                <div class="wall"></div>
+                
+                <div class="window-frame">
+                    <div class="night-sky">
+                        <div class="moon">🌙</div>
+                        <div class="stars">✨</div>
+                    </div>
+                    <div class="window-bars"></div>
+                </div>
+
+                <div class="hanging-rack">
+                    <div class="pot"></div>
+                    <div class="pot"></div>
+                    <div class="pot"></div>
+                </div>
+
+                <div class="cat">
+                    <div class="body"></div>
+                    <div class="head">
+                        <div class="ear left"></div>
+                        <div class="ear right"></div>
+                        <div class="z">Z</div>
+                    </div>
+                </div>
+
+                <div class="kitchen-counter">
+                    <div class="stove-top">
+                        <div class="burner"></div>
+                        <div class="burner"></div>
+                        <div class="frying-pan"></div>
+                    </div>
+                    <div class="counter-surface"></div>
+                    <div class="oven-unit">
+                        <div class="oven-panel">
+                            <div class="knob"></div>
+                            <div class="knob"></div>
+                            <div class="knob"></div>
+                        </div>
+                        <div class="oven-door">
+                            <div class="oven-window">
+                                <div class="glow"></div>
+                                <div class="bun" id="bun"></div>
+                            </div>
+                            <div class="handle"></div>
+                        </div>
+                    </div>
+                    <div class="counter-base">
+                        <div class="cabinet-door"></div>
+                        <div class="cabinet-door"></div>
+                        <div class="cabinet-door"></div>
+                        <div class="cabinet-door"></div>
+                    </div>
+                </div>
+
+                <div class="ui-panel" id="ui-panel">
+                    <div class="mode-switch">
+                        <button class="mode-btn active" id="mode-timer" onclick="switchMode('timer')">Timer</button>
+                        <button class="mode-btn" id="mode-stopwatch" onclick="switchMode('stopwatch')">Stopwatch</button>
+                    </div>
+                    <div class="timer-row">
+                        <div class="timer" id="timer-display">25:00</div>
+                        <div class="controls">
+                            <button class="control-btn" onclick="adjustTime(1)">+</button>
+                            <button class="control-btn" onclick="adjustTime(-1)">-</button>
+                        </div>
+                    </div>
+                    <select id="subject-selector" class="subject-selector"></select>
+                    <button class="btn" id="start-btn" onclick="toggleBaking()">Start Baking</button>
+                </div>
+
+                <div class="bubbles">
+                    <div class="bubble" data-tooltip="My Buns" onclick="openDashboard()">🧺</div>
+                    <div class="bubble" data-tooltip="Ask AI" onclick="openChatModal()">🤖</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD PAGE -->
+        <div class="page" id="dashboard-page">
+            <div class="dash-header">
+                <h1>🧺 My Buns</h1>
+                <button class="back-btn" onclick="closeDashboard()">← Back to Kitchen</button>
+            </div>
+            <div class="dash-grid">
+                <div class="dash-card">
+                    <h2>Weekly Focus</h2>
+                    <div class="bar-chart" id="bar-chart"></div>
+                </div>
+                <div class="dash-card">
+                    <h2>Subjects Studied</h2>
+                    <div class="subject-list" id="subject-list"></div>
+                    <div class="add-subject-form">
+                        <input type="color" id="subject-color" value="#ffab91">
+                        <input type="text" id="subject-name" placeholder="New subject..." class="cozy-input" style="flex:1; padding:8px;">
+                        <button onclick="addSubject()" style="padding:0 15px;">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Load Ollama -->
+    <script type="module">
+      import ollama from "https://cdn.jsdelivr.net/npm/ollama@0.6.3/browser/+esm";
+      window.ollama = ollama; 
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
